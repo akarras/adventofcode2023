@@ -2,7 +2,7 @@ use std::{
     fs::File,
     io::{BufRead, BufReader},
     iter::Enumerate,
-    ops::{Deref, Range, RangeInclusive},
+    ops::RangeInclusive,
 };
 
 fn read_day_3_data() -> Grid {
@@ -12,10 +12,7 @@ fn read_day_3_data() -> Grid {
 }
 
 pub fn day_3_part_1() {
-    println!(
-        "{}",
-        read_day_3_data().get_adjacent_numbers().sum::<u32>()
-    );
+    println!("{}", read_day_3_data().get_adjacent_numbers().sum::<u32>());
 }
 
 pub fn day_3_part_2() {
@@ -71,10 +68,8 @@ where
                     start_index = Some(index);
                 }
                 last_index = Some(index);
-            } else {
-                if let (Some(start_index), Some(last_index)) = (start_index, last_index) {
-                    return Some(start_index..=last_index);
-                }
+            } else if let (Some(start_index), Some(last_index)) = (start_index, last_index) {
+                return Some(start_index..=last_index);
             }
         }
         start_index.and_then(|start| last_index.map(|last| start..=last))
@@ -110,11 +105,11 @@ impl Grid {
 
     fn check_adjacent_predicate<T>(&self, row: usize, col: usize, pred: T) -> bool
     where
-        T: Fn(u8) -> bool,
+        T: Fn(u8) -> bool + 'static + Copy,
     {
         self.get_ajacent(row as i32, col as i32)
             .into_iter()
-            .any(|f| f.map(|p| pred(p)).unwrap_or(false))
+            .any(|f| f.map(pred).unwrap_or(false))
     }
 
     fn iterate_numbers(&self) -> impl Iterator<Item = (usize, RangeInclusive<usize>)> + '_ {
@@ -153,31 +148,42 @@ impl Grid {
     }
 
     fn find_gear_ratios(&self) -> u32 {
-        let numbers : Vec<_> = self.iterate_numbers().collect();
+        let numbers: Vec<_> = self.iterate_numbers().collect();
         let numbers = &numbers;
-        self.rows.iter().enumerate().flat_map(|(row_i, cols)| cols.iter().copied().enumerate().filter_map(move |(col_i, value)| {
-            (value == b'*').then(|| {
-                let numbers : Vec<_> = numbers.iter().filter(move |(row, cols)| {
-                    row.abs_diff(row_i) <= 1 && (cols.start().abs_diff(col_i) <= 1 || cols.end().abs_diff(col_i) <= 1)
-                }).flat_map(move |(row, columns)| self.get_number(*row, columns.clone())).collect();
-                if numbers.len() == 2 {
-                    Some(numbers.into_iter().product::<u32>())
-                } else {
-                    None
-                }
-            }).flatten()
-        })).sum::<u32>()
+        self.rows
+            .iter()
+            .enumerate()
+            .flat_map(|(row_i, cols)| {
+                cols.iter()
+                    .copied()
+                    .enumerate()
+                    .filter_map(move |(col_i, value)| {
+                        (value == b'*')
+                            .then(|| {
+                                let numbers: Vec<_> = numbers
+                                    .iter()
+                                    .filter(move |(row, cols)| {
+                                        row.abs_diff(row_i) <= 1
+                                            && (cols.start().abs_diff(col_i) <= 1
+                                                || cols.end().abs_diff(col_i) <= 1)
+                                    })
+                                    .flat_map(move |(row, columns)| {
+                                        self.get_number(*row, columns.clone())
+                                    })
+                                    .collect();
+                                if numbers.len() == 2 {
+                                    Some(numbers.into_iter().product::<u32>())
+                                } else {
+                                    None
+                                }
+                            })
+                            .flatten()
+                    })
+            })
+            .sum::<u32>()
     }
 
-    fn from_lines_owned<'a>(iter: impl Iterator<Item = String>) -> Self {
-        Self {
-            rows: iter
-                .map(|grid| grid.trim().as_bytes().to_owned().into_boxed_slice())
-                .collect::<Box<[_]>>(),
-        }
-    }
-
-    fn from_lines<'a>(iter: impl Iterator<Item = &'a str>) -> Self {
+    fn from_lines_owned(iter: impl Iterator<Item = String>) -> Self {
         Self {
             rows: iter
                 .map(|grid| grid.trim().as_bytes().to_owned().into_boxed_slice())
@@ -189,7 +195,13 @@ impl Grid {
 #[cfg(test)]
 mod test {
     use super::Grid;
-
+    fn from_lines<'a>(iter: impl Iterator<Item = &'a str>) -> Grid {
+        Grid {
+            rows: iter
+                .map(|grid| grid.trim().as_bytes().to_owned().into_boxed_slice())
+                .collect::<Box<[_]>>(),
+        }
+    }
     #[test]
     fn parse() {
         let input = "467..114..
@@ -202,7 +214,7 @@ mod test {
         ......755.
         ...$.*....
         .664.598..";
-        let grid = Grid::from_lines(input.lines());
+        let grid = from_lines(input.lines());
         assert_eq!(grid.get_number(0, 0..=2), Some(467));
         assert_eq!(grid.iterate_numbers().next(), Some((0, 0..=2)));
         let numbers = grid
@@ -213,7 +225,7 @@ mod test {
             numbers,
             vec![467, 114, 35, 633, 617, 58, 592, 755, 664, 598]
         );
-        
+
         assert_eq!(grid.find_gear_ratios(), 467835);
         // assert_eq!(
         //     grid.get_non_adjacent_numbers().collect::<Vec<_>>(),
