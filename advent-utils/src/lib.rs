@@ -88,7 +88,7 @@ where
     }
 
     fn expect_tag<'a>(&'a self, tag: &str) -> &'a str {
-        let (start, rest) = self.as_ref().trim().split_once(":").unwrap();
+        let (start, rest) = self.as_ref().trim().split_once(':').unwrap();
         assert_eq!(start, tag);
         rest
     }

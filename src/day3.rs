@@ -137,7 +137,7 @@ impl Grid {
     fn get_adjacent_numbers(&self) -> impl Iterator<Item = u32> + '_ {
         self.iterate_numbers()
             .filter(|(row, col)| {
-                col.clone().into_iter().any(|col| {
+                col.clone().any(|col| {
                     self.check_adjacent_predicate(*row, col, |c| !(c.is_ascii_digit() || c == b'.'))
                 })
             })

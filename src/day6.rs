@@ -24,9 +24,9 @@ fn read_big_race(mut iter: impl Iterator<Item = String>) -> RaceData {
     let time = iter.next().unwrap();
     let distance = iter.next().unwrap();
     let time = time.expect_tag("Time");
-    let time = time.replace(" ", "");
+    let time = time.replace(' ', "");
     let distances = distance.expect_tag("Distance");
-    let distance = distances.replace(" ", "");
+    let distance = distances.replace(' ', "");
     RaceData {
         race_duration: time.parse().unwrap(),
         distance_to_beat: distance.parse().unwrap(),
@@ -84,7 +84,7 @@ fn part1(lines: impl Iterator<Item = String>) -> String {
     let data = read_races(lines);
     let product_of_wins = data
         .into_iter()
-        .map(|race| race.find_num_wins() as u64)
+        .map(|race| race.find_num_wins())
         .product::<u64>();
     product_of_wins.to_string()
 }

@@ -4,7 +4,7 @@ use advent_utils::*;
 #[advent_of_code(day = 5, part = 1)]
 fn part_1(lines: impl Iterator<Item = String>) -> String {
     let data = Data::read_data(lines);
-    let smallest = data.map_seeds().into_iter().min().unwrap();
+    let smallest = data.map_seeds().min().unwrap();
     smallest.to_string()
 }
 
@@ -12,7 +12,6 @@ fn part_1(lines: impl Iterator<Item = String>) -> String {
 fn part_2(lines: impl Iterator<Item = String>) -> String {
     let smallest = Data::read_data(lines)
         .map_seed_ranges()
-        .into_iter()
         .min()
         .unwrap();
     smallest.to_string()
@@ -34,10 +33,7 @@ struct MappedRange {
 impl MappedRange {
     fn try_map(&self, value: u64) -> Option<u64> {
         let range = self.start..(self.start + self.length);
-        range.contains(&value).then(|| {
-            // println!("{}-{} {:?}", self.start, value, range);
-            (value - self.start) + self.dest_value
-        })
+        range.contains(&value).then_some((value - self.start) + self.dest_value)
     }
 }
 
@@ -47,14 +43,14 @@ impl Map {
         I: Iterator<Item = String>,
     {
         let header = data.next().unwrap();
-        let (prefix, postfix) = header.trim().split_once(" ").unwrap();
+        let (prefix, postfix) = header.trim().split_once(' ').unwrap();
         assert_eq!(postfix, "map:");
-        let mut header_parts = prefix.split("-");
+        let mut header_parts = prefix.split('-');
         let _incoming = header_parts.next().unwrap().to_owned();
         let _to = header_parts.next();
         let _outgoing = header_parts.next().unwrap().to_owned();
         let mut maps = Vec::new();
-        while let Some(data) = data.next() {
+        for data in data.by_ref() {
             if data.trim().is_empty() {
                 break;
             }
@@ -93,7 +89,7 @@ struct Data {
 impl Data {
     fn read_data(mut data: impl Iterator<Item = String>) -> Data {
         let seeds = data.next().unwrap();
-        let (header, seeds) = seeds.split_once(":").unwrap();
+        let (header, seeds) = seeds.split_once(':').unwrap();
         assert_eq!(header, "seeds");
         let seeds = seeds.read_delimited(" ");
         let _ = data.next().unwrap();
@@ -124,7 +120,6 @@ impl Data {
             .tuple_pairs()
             .flat_map(|(range_start, seed_length)| {
                 (range_start..=(range_start + seed_length))
-                    .into_iter()
                     .map(|seed| self.map_seed(seed))
             })
     }

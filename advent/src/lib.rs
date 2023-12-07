@@ -30,7 +30,7 @@ pub fn advent_of_code(
     };
     let DayArgs { day, part } = match DayArgs::from_list(&attr_args) {
         Ok(v) => v,
-        Err(e) => return TokenStream::from(Error::from(e).write_errors()),
+        Err(e) => return TokenStream::from(e.write_errors()),
     };
     let struct_name = format_ident!("Day{day}Part{part}");
     let file_path = format!("./test_data/day_{day}");
