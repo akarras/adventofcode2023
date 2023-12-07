@@ -1,3 +1,4 @@
+workspace = { members = ["advent", "advent-utils"] }
 [package]
 name = "advent-of-code-2023"
 version = "0.1.0"
@@ -7,3 +8,7 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "4.4.10", features = ["derive"] }
+retainer = "0.3.0"
+advent = {path = "./advent"}
+advent-utils = {path = "./advent-utils"}
+inventory = "0.3.13"

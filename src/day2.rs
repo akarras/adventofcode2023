@@ -1,32 +1,29 @@
 use std::{
     collections::HashMap,
-    fs::File,
-    io::{BufRead, BufReader},
     str::FromStr,
 };
 
-fn read_day_2_data() -> impl Iterator<Item = Game> {
-    let read = File::open("./test_data/day_2").unwrap();
-    let reader = BufReader::new(read);
-    reader.lines().map(|l| Game::from_line(l.unwrap().as_str()))
-}
+use advent::advent_of_code;
+use advent_utils::*;
 
-pub fn day_2_part_1() {
+#[advent_of_code(day = 2, part = 1)]
+pub fn day_2_part_1(lines: impl Iterator<Item = String>) -> String {
     let mut possibilities = HashMap::new();
     possibilities.insert(Color::Red, 12);
     possibilities.insert(Color::Blue, 14);
     possibilities.insert(Color::Green, 13);
-    let day_2_data = read_day_2_data();
+    let day_2_data = lines.map(|game| Game::from_line(game.as_str()));
     let game_id_sum = possible_games(day_2_data, &possibilities)
         .map(|game| game.game_number)
         .sum::<u32>();
-    println!("{game_id_sum}");
+    game_id_sum.to_string()
 }
 
-pub fn day_2_part_2() {
-    let day_2_data = read_day_2_data();
+#[advent_of_code(day = 2, part = 2)]
+pub fn day_2_part_2(lines: impl Iterator<Item = String>) -> String {
+    let day_2_data = lines.map(|game| Game::from_line(game.as_str()));
     let sum = day_2_data.map(min_round).map(power).sum::<u32>();
-    println!("{sum}");
+    sum.to_string()
 }
 
 fn power(round: Round) -> u32 {

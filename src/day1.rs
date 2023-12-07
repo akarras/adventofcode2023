@@ -1,4 +1,5 @@
-use std::io::stdin;
+use advent::advent_of_code;
+use advent_utils::*;
 
 const POSSIBLE_DIGITS: &[(&str, u32)] = &[
     ("one", 1),
@@ -60,20 +61,20 @@ fn find_digit(input: &str) -> u32 {
     }
 }
 
-pub fn day_1_part_1() {
-    let value = stdin()
-        .lines()
-        .map(|line| find_calibration_value_simple(line.unwrap().as_str()))
+#[advent_of_code(day = 1, part = 1)]
+pub fn day_1_part_1(lines: impl Iterator<Item = String>) -> String {
+    let value = lines
+        .map(|line| find_calibration_value_simple(line.as_str()))
         .sum::<u32>();
-    println!("{value}");
+    value.to_string()
 }
 
-pub fn day_1_part_2() {
-    let value = stdin()
-        .lines()
-        .map(|line| find_calibration_value_text(line.unwrap().as_str()))
+#[advent_of_code(day = 1, part = 2)]
+fn day_1_part_2(lines: impl Iterator<Item = String>) -> String {
+    let value = lines
+        .map(|line| find_calibration_value_text(line.as_str()))
         .sum::<u32>();
-    println!("{value}");
+    value.to_string()
 }
 
 fn find_calibration_value_simple(line: &str) -> u32 {

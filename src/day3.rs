@@ -1,22 +1,19 @@
-use std::{
-    fs::File,
-    io::{BufRead, BufReader},
-    iter::Enumerate,
-    ops::RangeInclusive,
-};
+use std::{iter::Enumerate, ops::RangeInclusive};
 
-fn read_day_3_data() -> Grid {
-    let read = File::open("./test_data/day_3").unwrap();
-    let reader = BufReader::new(read);
-    Grid::from_lines_owned(reader.lines().map(|s| s.unwrap()))
+use advent::advent_of_code;
+use advent_utils::*;
+
+#[advent_of_code(day = 3, part = 1)]
+fn day_3_part_1(lines: impl Iterator<Item = String>) -> String {
+    Grid::from_lines_owned(lines)
+        .get_adjacent_numbers()
+        .sum::<u32>()
+        .to_string()
 }
 
-pub fn day_3_part_1() {
-    println!("{}", read_day_3_data().get_adjacent_numbers().sum::<u32>());
-}
-
-pub fn day_3_part_2() {
-    println!("{}", read_day_3_data().find_gear_ratios());
+#[advent_of_code(day = 3, part = 2)]
+fn day_3_part_2(lines: impl Iterator<Item = String>) -> String {
+    Grid::from_lines_owned(lines).find_gear_ratios().to_string()
 }
 
 /// Yields a range from an iterator

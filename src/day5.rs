@@ -1,22 +1,21 @@
-use crate::utils::{read_file, IterExt, ParseExt};
+use advent::advent_of_code;
+use advent_utils::*;
 
-fn read_day_5_data() -> Data {
-    let lines = read_file("./test_data/day_5");
-    Data::read_data(lines)
+#[advent_of_code(day = 5, part = 1)]
+fn part_1(lines: impl Iterator<Item = String>) -> String {
+    let data = Data::read_data(lines);
+    let smallest = data.map_seeds().into_iter().min().unwrap();
+    smallest.to_string()
 }
 
-pub fn day_5_part_1() {
-    let smallest = read_day_5_data().map_seeds().into_iter().min().unwrap();
-    println!("part 1: {smallest}");
-}
-
-pub fn day_5_part_2() {
-    let smallest = read_day_5_data()
+#[advent_of_code(day = 5, part = 2)]
+fn part_2(lines: impl Iterator<Item = String>) -> String {
+    let smallest = Data::read_data(lines)
         .map_seed_ranges()
         .into_iter()
         .min()
         .unwrap();
-    println!("part 2: {smallest}");
+    smallest.to_string()
 }
 
 struct Map {

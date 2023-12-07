@@ -1,6 +1,8 @@
-use std::{ops::Neg, time::Instant};
+use std::ops::Neg;
 
-use crate::utils::*;
+use advent::advent_of_code;
+
+use advent_utils::*;
 
 fn read_races(mut iter: impl Iterator<Item = String>) -> Vec<RaceData> {
     let time = iter.next().unwrap();
@@ -77,23 +79,21 @@ impl RaceData {
     // }
 }
 
-pub fn day_6_part_1() {
-    let lines = read_file("./test_data/day_6");
+#[advent_of_code(day = 6, part = 1)]
+fn part1(lines: impl Iterator<Item = String>) -> String {
     let data = read_races(lines);
     let product_of_wins = data
         .into_iter()
         .map(|race| race.find_num_wins() as u64)
         .product::<u64>();
-    println!("{}", product_of_wins);
+    product_of_wins.to_string()
 }
 
-pub fn day_6_part_2() {
-    let lines = read_file("./test_data/day_6");
+#[advent_of_code(day = 6, part = 2)]
+fn day_6_part_2(lines: impl Iterator<Item = String>) -> String {
     let data = read_big_race(lines);
-    let time = Instant::now();
     let ways = data.find_num_wins();
-    println!("{:?}", time.elapsed());
-    println!("{ways}");
+    ways.to_string()
 }
 
 #[cfg(test)]

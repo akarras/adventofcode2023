@@ -1,28 +1,26 @@
-use std::{
-    collections::HashSet,
-    fs::File,
-    io::{BufRead, BufReader},
-};
+use std::collections::HashSet;
 
-fn read_day_3_data() -> Vec<Card> {
-    let read = File::open("./test_data/day_4").unwrap();
-    let reader = BufReader::new(read);
-    reader
-        .lines()
-        .map(|line| Card::parse_line(line.unwrap().as_str()))
-        .collect()
+use advent::advent_of_code;
+use advent_utils::*;
+
+#[advent_of_code(day = 4, part = 1)]
+pub fn day_4_part_1(lines: impl Iterator<Item = String>) -> String {
+    let sum = lines
+        .into_iter()
+        .map(|line| Card::parse_line(&line))
+        .map(|card| card.score())
+        .sum::<u32>();
+    sum.to_string()
 }
 
-pub fn day_4_part_1() {
-    let cards = read_day_3_data();
-    let sum = cards.into_iter().map(|card| card.score()).sum::<u32>();
-    println!("{sum}");
-}
-
-pub fn day_4_part_2() {
-    let cards = read_day_3_data();
+#[advent_of_code(day = 4, part = 2)]
+pub fn day_4_part_2(lines: impl Iterator<Item = String>) -> String {
+    let cards = lines
+        .into_iter()
+        .map(|line| Card::parse_line(&line))
+        .collect::<Vec<_>>();
     let sum = process_pile(&cards);
-    println!("{sum}");
+    sum.to_string()
 }
 
 fn process_pile(cards: &Vec<Card>) -> u32 {
