@@ -1,10 +1,7 @@
 use darling::{ast::NestedMeta, Error, FromMeta};
 use proc_macro::TokenStream;
 use quote::{format_ident, quote};
-use syn::{
-    parse_macro_input, ItemFn,
-    Visibility,
-};
+use syn::{parse_macro_input, ItemFn, Visibility};
 
 mod kw {
     syn::custom_keyword!(day);

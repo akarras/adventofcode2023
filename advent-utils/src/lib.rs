@@ -21,7 +21,9 @@ impl TestRunner {
     }
 
     pub fn run_all() {
-        let mut tests = inventory::iter::<TestRunner>.into_iter().collect::<Vec<_>>();
+        let mut tests = inventory::iter::<TestRunner>
+            .into_iter()
+            .collect::<Vec<_>>();
         tests.sort_by_key(|test| (test.day, test.part));
         for test in tests {
             (test.run_test)();
@@ -120,17 +122,90 @@ where
     Self: Iterator + Sized,
 {
     // tuple groups
-    type Item;
     fn tuple_pairs(self) -> TupleIter<Self>;
+    fn count_distinct(self) -> DistinctCounter<Self>
+    where
+        Self: Iterator,
+        <Self as Iterator>::Item: PartialEq + Eq;
 }
 
 impl<I> IterExt for I
 where
     I: Iterator + Sized,
 {
-    type Item = I::Item;
-
     fn tuple_pairs(self) -> TupleIter<Self> {
         TupleIter(self)
+    }
+
+    /// Requires a sorted set, but returns a list of distinct items
+    fn count_distinct(self) -> DistinctCounter<Self>
+    where
+        I::Item: PartialEq + Eq,
+    {
+        DistinctCounter::new(self)
+    }
+}
+
+pub struct DistinctCounter<I>
+where
+    I: Iterator,
+    I::Item: PartialEq + Eq,
+{
+    iter: I,
+    last_item: Option<I::Item>,
+}
+impl<I> DistinctCounter<I>
+where
+    I: Iterator + Sized,
+    I::Item: PartialEq + Eq,
+{
+    fn new(iter: I) -> Self {
+        Self {
+            iter,
+            last_item: None,
+        }
+    }
+}
+
+impl<I> Iterator for DistinctCounter<I>
+where
+    I: Iterator,
+    I::Item: PartialEq + Eq,
+{
+    type Item = (usize, I::Item);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let Self { iter, last_item } = self;
+        let mut current_count = 1;
+        while let Some(item) = iter.next() {
+            if let Some(last) = last_item.take() {
+                if last != item {
+                    *last_item = Some(item);
+                    let count = current_count;
+                    return Some((count, last));
+                } else {
+                    current_count += 1;
+                }
+            }
+            *last_item = Some(item);
+        }
+        if let Some(last_item) = self.last_item.take() {
+            return Some((current_count, last_item));
+        }
+        None
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::IterExt;
+
+    #[test]
+    fn dedup() {
+        let mut counts = "aabbcccdddde".chars().count_distinct().collect::<Vec<_>>();
+        assert_eq!(
+            counts,
+            vec![(2, 'a'), (2, 'b'), (3, 'c'), (4, 'd'), (1, 'e')]
+        );
     }
 }

@@ -10,10 +10,7 @@ fn part_1(lines: impl Iterator<Item = String>) -> String {
 
 #[advent_of_code(day = 5, part = 2)]
 fn part_2(lines: impl Iterator<Item = String>) -> String {
-    let smallest = Data::read_data(lines)
-        .map_seed_ranges()
-        .min()
-        .unwrap();
+    let smallest = Data::read_data(lines).map_seed_ranges().min().unwrap();
     smallest.to_string()
 }
 
@@ -33,7 +30,9 @@ struct MappedRange {
 impl MappedRange {
     fn try_map(&self, value: u64) -> Option<u64> {
         let range = self.start..(self.start + self.length);
-        range.contains(&value).then_some((value - self.start) + self.dest_value)
+        range
+            .contains(&value)
+            .then_some((value - self.start) + self.dest_value)
     }
 }
 
@@ -119,8 +118,7 @@ impl Data {
             .copied()
             .tuple_pairs()
             .flat_map(|(range_start, seed_length)| {
-                (range_start..=(range_start + seed_length))
-                    .map(|seed| self.map_seed(seed))
+                (range_start..=(range_start + seed_length)).map(|seed| self.map_seed(seed))
             })
     }
 }
