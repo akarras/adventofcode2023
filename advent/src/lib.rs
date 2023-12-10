@@ -19,12 +19,13 @@ pub fn advent_of_code(
     args: proc_macro::TokenStream,
     item: proc_macro::TokenStream,
 ) -> proc_macro::TokenStream {
-    let attr_args = match NestedMeta::parse_meta_list(args.into()) {
-        Ok(v) => v,
-        Err(e) => {
-            return TokenStream::from(Error::from(e).write_errors());
-        }
-    };
+    let attr_args =
+        match NestedMeta::parse_meta_list(args.into()) {
+            Ok(v) => v,
+            Err(e) => {
+                return TokenStream::from(Error::from(e).write_errors());
+            }
+        };
     let DayArgs { day, part } = match DayArgs::from_list(&attr_args) {
         Ok(v) => v,
         Err(e) => return TokenStream::from(e.write_errors()),

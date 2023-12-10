@@ -5,11 +5,12 @@ use advent_utils::*;
 
 #[advent_of_code(day = 4, part = 1)]
 pub fn day_4_part_1(lines: impl Iterator<Item = String>) -> String {
-    let sum = lines
-        .into_iter()
-        .map(|line| Card::parse_line(&line))
-        .map(|card| card.score())
-        .sum::<u32>();
+    let sum =
+        lines
+            .into_iter()
+            .map(|line| Card::parse_line(&line))
+            .map(|card| card.score())
+            .sum::<u32>();
     sum.to_string()
 }
 
