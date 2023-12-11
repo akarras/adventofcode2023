@@ -32,6 +32,7 @@ pub mod day5;
 pub mod day6;
 pub mod day7;
 pub mod day7_part2;
+pub mod day8;
 
 fn main() {
     let Args { command } = Args::parse();
